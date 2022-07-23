@@ -17,58 +17,58 @@
 #define MAX_ID_LENGTH 32
 
 /** Types of tokens that we recognise */
-enum class TokenType : int32_t {
+enum TokenType : int32_t {
 
-	_EOF = -1, /* end-of-file */
-	ID,        /* identifier */
-	BOOL,      /* boolean literal */
-	CHAR,      /* character literal */
-	STR,       /* string literal */
-	NUM,       /* number literal (no decimals) */
-	DEC,       /* floating-point literal (decimals) */
-	ARRAY,     /* array of any given type */
+	TOK_EOF = -1,  /* end-of-file */
+	TOK_ID,        /* identifier */
+	TOK_BOOL,      /* boolean literal */
+	TOK_CHAR,      /* character literal */
+	TOK_STR,       /* string literal */
+	TOK_NUM,       /* number literal (no decimals) */
+	TOK_DEC,       /* floating-point literal (decimals) */
+	TOK_ARRAY,     /* array of any given type */
 
 	/* Reserved words */
-	AND,
-	BREAK,
-	CONTINUE,
-	ELSE,
-	ELSIF,
-	EXIT,
-	FALSE,
-	FOR,
-	FUNC,
-	IF,
-	OR,
-	PRINT,
-	PRINTLN,
-	RETURN,
-	TRUE,
-	VOID,
-	WHILE,
+	TOK_AND,
+	TOK_BREAK,
+	TOK_CONTINUE,
+	TOK_ELSE,
+	TOK_ELSIF,
+	TOK_EXIT,
+	TOK_FALSE,
+	TOK_FOR,
+	TOK_FUNC,
+	TOK_IF,
+	TOK_OR,
+	TOK_PRINT,
+	TOK_PRINTLN,
+	TOK_RETURN,
+	TOK_TRUE,
+	TOK_VOID,
+	TOK_WHILE,
 
 	/* Relational operators */
-	EQ,        /* equal */
-	GE,        /* greater than equal to */
-	GT,        /* greater than */
-	LE,        /* less than equal to */
-	LT,        /* less than */
-	NE,        /* not equal */
+	TOK_EQ,        /* equal */
+	TOK_GE,        /* greater than equal to */
+	TOK_GT,        /* greater than */
+	TOK_LE,        /* less than equal to */
+	TOK_LT,        /* less than */
+	TOK_NE,        /* not equal */
 
 	/* Arithmetic operators */
-	MINUS,
-	PLUS,
-	DIV,
-	MUL,
-	MOD,
+	TOK_MINUS,
+	TOK_PLUS,
+	TOK_DIV,
+	TOK_MUL,
+	TOK_MOD,
 
 	/* Non-alphabetic characters */
-	LBRACK,    /* left bracket '[' */
-	RBRACK,    /* right bracket ']' */
-	COMMA,
-	LPAR,      /* left parenthesis '(' */
-	RPAR,      /* right parenthesis ')' */
-	RET        /* return type '=>' */
+	TOK_LBRACK,    /* left bracket '[' */
+	TOK_RBRACK,    /* right bracket ']' */
+	TOK_COMMA,
+	TOK_LPAR,      /* left parenthesis '(' */
+	TOK_RPAR,      /* right parenthesis ')' */
+	TOK_ARROW      /* return type '=>' */
 
 };
 
