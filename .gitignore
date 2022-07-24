@@ -1,6 +1,7 @@
 ## Misc ##
 bin/
 .vs/
+x64/
 
 ## C++ ##
 # Prerequisites
