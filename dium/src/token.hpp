@@ -56,6 +56,7 @@ enum TokenType : int32_t {
 	TOK_LE,        /* less than equal to */
 	TOK_LT,        /* less than */
 	TOK_NE,        /* not equal */
+	TOK_NOT,       /* not */
 
 	/* Arithmetic operators */
 	TOK_MINUS,
