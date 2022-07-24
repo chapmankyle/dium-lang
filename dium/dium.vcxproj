@@ -129,9 +129,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\error.hpp" />
+    <ClInclude Include="src\lexer.hpp" />
     <ClInclude Include="src\token.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\lexer.cpp" />
     <ClCompile Include="src\token.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
