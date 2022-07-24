@@ -13,9 +13,9 @@
 static const char *tokenNames[] = {
 	"end-of-file", "identifier", "boolean", "character", "string", "number", "decimal", "array",
 	"'and'", "'break'", "'continue'", "'else'", "'elsif'", "'exit'", "'false'", "'for'", "'func'",
-	"'if'", "'or'", "'print'", "'println'", "'return'", "'true'", "'void'", "'while'",
+	"'if'", "'in'", "'or'", "'print'", "'println'", "'range'", "'return'", "'true'", "'void'", "'while'",
 	"'='", "'>='", "'>'", "'<='", "'<'", "'!='", "'-'", "'+'", "'/'", "'*'", "'%'",
-	"'['", "']'", "','", "'('", "')'", "'=>'"
+	"'.'", "'['", "']'", "','", "'('", "')'", "'=>'"
 };
 
 const char *getTokenString(TokenType type) {

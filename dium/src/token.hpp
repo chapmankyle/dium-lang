@@ -39,9 +39,11 @@ enum TokenType : int32_t {
 	TOK_FOR,
 	TOK_FUNC,
 	TOK_IF,
+	TOK_IN,
 	TOK_OR,
 	TOK_PRINT,
 	TOK_PRINTLN,
+	TOK_RANGE,
 	TOK_RETURN,
 	TOK_TRUE,
 	TOK_VOID,
@@ -63,6 +65,7 @@ enum TokenType : int32_t {
 	TOK_MOD,
 
 	/* Non-alphabetic characters */
+	TOK_DOT,       /* . */
 	TOK_LBRACK,    /* left bracket '[' */
 	TOK_RBRACK,    /* right bracket ']' */
 	TOK_COMMA,
