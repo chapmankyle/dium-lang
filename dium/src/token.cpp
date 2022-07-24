@@ -1,6 +1,6 @@
 /**
- * @file       token.hpp
- * @brief      Data type definitions for the lexer
+ * @file       token.cpp
+ * @brief      Implementation for the tokens
  * @copyright  Copyright (c) 2022-present
  * @author     Kyle Chapman
  * @date       2022-07-23
