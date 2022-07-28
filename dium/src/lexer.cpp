@@ -47,12 +47,17 @@ static ReservedWord reservedWords[] = {
 #define NUM_RESERVED_WORDS (sizeof(reservedWords) / sizeof(ReservedWord))
 #define MAX_STR_LEN 1024
 
-static std::ifstream srcFile;   /* Source file */
-static char currChar;           /* Current character in the source file */
-static SourcePosition position; /* Position inside the source file */
+/* Source file */
+static std::ifstream srcFile;
+
+/* Current character in the source file */
+static char currChar;
+
+/* Position inside the source file */
+SourcePosition position;
 
 
-bool init(char *path) {
+bool init(const char *path) {
 	srcFile.open(path);
 
 	// File could not be opened
@@ -62,7 +67,7 @@ bool init(char *path) {
 	}
 
 	position.line = 1;
-	position.column = -1; // Column will be incremented by 1 after call to 'nextChar'
+	position.column = 0;
 	nextChar();
 	return true;
 }
@@ -89,10 +94,10 @@ void nextChar() {
 	srcFile.get(currChar);
 
 	if (isNewLine(last)) {
-		position.line++;
+		position.line += 1;
 		position.column = 0;
 	} else {
-		position.column++;
+		position.column += 1;
 	}
 }
 
@@ -105,14 +110,15 @@ void skipComment(bool single) {
 		return;
 	}
 
-	SourcePosition start = position;
+	// Take away 2 from column since the multi-line comment is 2 characters long "/-"
+	SourcePosition start{ position.line, position.column - 2 };
 	bool closed = false;
 
 	// Keep checking characters while the comment is not closed
 	while (!closed) {
 		if (srcFile.eof()) {
 			position = start;
-			peprint("Comment not closed");
+			printErr("Comment not closed");
 			return;
 		}
 
@@ -268,7 +274,7 @@ void getToken(Token *token) {
 			nextChar();
 			break;
 		default:
-			peprint("Illegal character '%c' (ASCII #%d) found", currChar, currChar);
+			printErr("Illegal character '%c' (ASCII #%d) found", currChar, currChar);
 			break;
 		}
 	}

@@ -19,7 +19,7 @@
  * @param path Path to the source file to read from.
  * @returns `true` if the lexer was initialized successfully, `false` otherwise.
  */
-bool init(char *path);
+bool init(const char *path);
 
 /**
  * Closes the lexer and frees all allocated memory.
