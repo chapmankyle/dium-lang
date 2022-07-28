@@ -135,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\lexer.cpp" />
+    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\token.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
