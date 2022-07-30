@@ -39,12 +39,6 @@ bool isNewLine(const char c);
 void nextChar();
 
 /**
- * Skips comments.
- * @param single `true` if the comment is a single-line comment, `false` if multi-line.
- */
-void skipComment(bool single);
-
-/**
  * Gets the next token from the source file.
  * @param[out] token Next token.
  */
