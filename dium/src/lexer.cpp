@@ -12,7 +12,7 @@
 
 /* Single reserved word */
 struct ReservedWord {
-	const char *word;  /* Actual word */
+	std::string word;  /* Actual word */
 	TokenType   type;  /* Token type */
 };
 
@@ -47,6 +47,13 @@ static ReservedWord reservedWords[] = {
 #define NUM_RESERVED_WORDS (sizeof(reservedWords) / sizeof(ReservedWord))
 #define MAX_STR_LEN 1024
 
+// --------------- function prototypes -------------------------
+
+static void resetToken(Token *token);
+static void processWord(Token *token);
+static void processNumber(Token *token);
+static void skipComment(bool single);
+
 /* Source file */
 static std::ifstream srcFile;
 
@@ -62,7 +69,7 @@ bool init(const char *path) {
 
 	// File could not be opened
 	if (!srcFile || !srcFile.is_open()) {
-		// TODO: Output error saying file could not be opened
+		printErr("File could not be opened");
 		return false;
 	}
 
@@ -95,55 +102,35 @@ void nextChar() {
 
 	if (isNewLine(last)) {
 		position.line += 1;
-		position.column = 0;
+		position.column = 1;
 	} else {
 		position.column += 1;
 	}
 }
 
-void skipComment(bool single) {
-	// Only need to read to end of current line (single-line comment)
-	if (single && currChar == '/') {
-		while (!isNewLine(currChar) && !srcFile.eof()) {
-			nextChar();
-		}
-		return;
+/**
+ * Resets the given token.
+ * @param token Token to reset.
+ */
+void resetToken(Token *token) {
+	if (token->identifier) {
+		token->identifier.reset();
 	}
 
-	// Take away 2 from column since the multi-line comment is 2 characters long "/-"
-	SourcePosition start{ position.line, position.column - 2 };
-	bool closed = false;
+	if (token->string) {
+		token->string.reset();
+	}
 
-	// Keep checking characters while the comment is not closed
-	while (!closed) {
-		if (srcFile.eof()) {
-			position = start;
-			printErr("Comment not closed");
-			return;
-		}
+	if (token->character) {
+		token->character.reset();
+	}
 
-		// Could close the comment (-/)
-		if (currChar == '-') {
-			nextChar();
-			if (currChar == '/') {
-				nextChar();
-				closed = true;
-				break;
-			}
-			continue;
-		}
+	if (token->ivalue) {
+		token->ivalue.reset();
+	}
 
-		// Could be a nested comment (/-)
-		if (currChar == '/') {
-			nextChar();
-			if (currChar == '-') {
-				nextChar();
-				skipComment(false);
-			}
-			continue;
-		}
-
-		nextChar();
+	if (token->dvalue) {
+		token->dvalue.reset();
 	}
 }
 
@@ -153,6 +140,9 @@ void getToken(Token *token) {
 		token->type = TOK_EOF;
 		return;
 	}
+
+	// Reset token fields
+	resetToken(token);
 
 	// Skip whitespace
 	while (isspace(currChar)) {
@@ -165,19 +155,23 @@ void getToken(Token *token) {
 		}
 	}
 
-	if (isdigit(currChar)) {
-		// TODO: Process number
-	} else if (isalnum(currChar) || currChar == '_') {
-		// TODO: Process word
+	if (isalpha(currChar) || currChar == '_') {
+		// Process word
+		processWord(token);
+	} else if (isdigit(currChar)) {
+		// Process number
+		processNumber(token);
 	} else {
 		switch (currChar) {
 		case '"':
-			nextChar();
 			// TODO: Process string
+			token->type = TOK_STR;
+			nextChar();
 			break;
 		case '\'':
-			nextChar();
 			// TODO: Process character
+			token->type = TOK_CHAR;
+			nextChar();
 			break;
 		case '=':
 			nextChar();
@@ -228,9 +222,11 @@ void getToken(Token *token) {
 			if (currChar == '-') {
 				nextChar();
 				skipComment(false);
+				token->type = TOK_NONE;
 				getToken(token);
 			} else if (currChar == '/') {
 				skipComment(true);
+				token->type = TOK_NONE;
 				getToken(token);
 			} else {
 				token->type = TOK_DIV;
@@ -273,9 +269,148 @@ void getToken(Token *token) {
 			token->type = TOK_RPAR;
 			nextChar();
 			break;
+		case '{':
+			token->type = TOK_LCURL;
+			nextChar();
+			break;
+		case '}':
+			token->type = TOK_RCURL;
+			nextChar();
+			break;
 		default:
 			printErr("Illegal character '%c' (ASCII #%d) found", currChar, currChar);
 			break;
 		}
+	}
+}
+
+/**
+ * Processes a word and updates the given token.
+ * @param token Token to update after processing.
+ */
+void processWord(Token *token) {
+	std::string word = "";
+	int startColumn = position.column;
+
+	int idx = 0;
+	while (currChar != ' ' && !srcFile.eof() && (isalnum(currChar) || currChar == '_')) {
+		if (idx <= MAX_ID_LENGTH) {
+			word += currChar;
+			idx += 1;
+			nextChar();
+		} else {
+			position.column = startColumn;
+			printErr("Identifier too long (more than 32 characters)");
+		}
+	}
+
+	// Perform binary search through list of reserved words
+	int low = 0;
+	int mid = 0;
+	int high = sizeof(reservedWords) / sizeof(reservedWords[0]) - 1;
+	int cmp = 0;
+
+	while (low <= high) {
+		mid = (low + high) / 2;
+		cmp = word.compare(reservedWords[mid].word);
+
+		if (cmp < 0) {
+			high = mid - 1;
+		} else if (cmp > 0) {
+			low = mid + 1;
+		} else {
+			// Found a match, so it is a reserved word
+			token->type = reservedWords[mid].type;
+			token->identifier = word;
+			return;
+		}
+	}
+
+	// Not a reserved word, so it is an identifier
+	token->type = TOK_ID;
+	token->identifier = word;
+}
+
+/**
+ * Processes a number and updates the given token.
+ * @param token Token to update after processing.
+ */
+void processNumber(Token *token) {
+	SourcePosition start{ position };
+
+	int number;
+	int value;
+	int diff;
+
+	value = currChar - '0';
+	number = value;
+	nextChar();
+
+	// Build up the number until we do not have another number to read
+	while (isdigit(currChar)) {
+		diff = currChar - '0';
+
+		if (number <= ((INT_MAX - diff) / 10)) {
+			number = (10 * value) + diff;
+			value = number;
+			nextChar();
+		} else {
+			position = start;
+			printErr("Number too large");
+		}
+	}
+
+	// Update token information
+	token->type = TOK_NUM;
+	token->ivalue = number;
+}
+
+/**
+ * Skips comments.
+ * @param single `true` if the comment is a single-line comment, `false` if multi-line.
+ */
+void skipComment(bool single) {
+	// Only need to read to end of current line (single-line comment)
+	if (single && currChar == '/') {
+		while (!isNewLine(currChar) && !srcFile.eof()) {
+			nextChar();
+		}
+		return;
+	}
+
+	// Take away 2 from column since the multi-line comment is 2 characters long "/-"
+	SourcePosition start{ position.line, position.column - 2 };
+	bool closed = false;
+
+	// Keep checking characters while the comment is not closed
+	while (!closed) {
+		if (srcFile.eof()) {
+			position = start;
+			printErr("Comment not closed");
+			return;
+		}
+
+		// Could close the comment (-/)
+		if (currChar == '-') {
+			nextChar();
+			if (currChar == '/') {
+				nextChar();
+				closed = true;
+				break;
+			}
+			continue;
+		}
+
+		// Could be a nested comment (/-)
+		if (currChar == '/') {
+			nextChar();
+			if (currChar == '-') {
+				nextChar();
+				skipComment(false);
+			}
+			continue;
+		}
+
+		nextChar();
 	}
 }
