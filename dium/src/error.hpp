@@ -87,7 +87,7 @@ extern std::string sname;
  * @param ... Variable arguments.
  */
 template <typename ...Args>
-static std::string _customFormat(const char *fmt, Args... args) {
+static std::string customFormat(const char *fmt, Args... args) {
 	int sizeFormatted = std::snprintf(nullptr, 0, fmt, args...) + 1;
 	if (sizeFormatted <= 0) {
 		return "";
@@ -107,24 +107,24 @@ static std::string _customFormat(const char *fmt, Args... args) {
  * @param ... Variable arguments.
  */
 template <typename ...Args>
-static void _customPrint(const char *pre, const SourcePosition *pos, const char *fmt, Args... args) {
+static void customPrint(const char *pre, const SourcePosition *pos, const char *fmt, Args... args) {
 	std::string message = "";
 
 	if (sname.length() > 0) {
-		message += _customFormat("%s%s:%s", ASCII_BOLD_WHITE, sname.c_str(), ASCII_RESET);
+		message += customFormat("%s%s:%s", ASCII_BOLD_WHITE, sname.c_str(), ASCII_RESET);
 	}
 
 	if (pos != nullptr) {
-		message += _customFormat(" %s%d:%d%s", ASCII_BOLD_WHITE, pos->line, pos->column, ASCII_RESET);
+		message += customFormat(" %s%d:%d%s", ASCII_BOLD_WHITE, pos->line, pos->column, ASCII_RESET);
 	}
 
 	if (pre != nullptr) {
-		message += _customFormat(" %s ", pre);
+		message += customFormat(" %s ", pre);
 	} else {
 		message += " ";
 	}
 
-	message += _customFormat(fmt, args...);
+	message += customFormat(fmt, args...);
 	std::cerr << message << std::endl;
 }
 
@@ -136,7 +136,7 @@ static void _customPrint(const char *pre, const SourcePosition *pos, const char 
 template <typename ...Args>
 void printErr(const char *fmt, Args... args) {
 	const char *pre = ASCII_BOLD_RED "Error:" ASCII_RESET;
-	_customPrint(pre, &position, fmt, args...);
+	customPrint(pre, &position, fmt, args...);
 	exit(2);
 }
 
@@ -148,7 +148,7 @@ void printErr(const char *fmt, Args... args) {
 template <typename ...Args>
 void printWarn(const char *fmt, Args... args) {
 	const char *pre = ASCII_BOLD_YELLOW "Warning:" ASCII_RESET;
-	_customPrint(pre, &position, fmt, args...);
+	customPrint(pre, &position, fmt, args...);
 	exit(2);
 }
 
