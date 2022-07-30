@@ -12,6 +12,8 @@
 #define TOKEN_HPP
 
 #include <cstdint>
+#include <string>
+#include <optional>
 
 /** Maximum length of an identifier */
 #define MAX_ID_LENGTH 32
@@ -19,7 +21,7 @@
 /** Types of tokens that we recognise */
 enum TokenType : int32_t {
 
-	TOK_EOF = -1,  /* end-of-file */
+	TOK_EOF = 0,   /* end-of-file */
 	TOK_ID,        /* identifier */
 	TOK_BOOL,      /* boolean literal */
 	TOK_CHAR,      /* character literal */
@@ -69,19 +71,36 @@ enum TokenType : int32_t {
 	TOK_DOT,       /* . */
 	TOK_LBRACK,    /* left bracket '[' */
 	TOK_RBRACK,    /* right bracket ']' */
-	TOK_COMMA,
+	TOK_COMMA,     /* , */
 	TOK_LPAR,      /* left parenthesis '(' */
 	TOK_RPAR,      /* right parenthesis ')' */
-	TOK_ARROW      /* return type '=>' */
+	TOK_LCURL,     /* left curly brace '{' */
+	TOK_RCURL,     /* right curly brace '}' */
+	TOK_ARROW,     /* return type '=>' */
+
+	TOK_NONE
 
 };
 
 /** Token data type */
 struct Token {
-	TokenType    type;                     /* Type of the token */
-	char         lexeme[MAX_ID_LENGTH+1];  /* Lexeme (for identifiers) */
-	int          value;
-	char        *string;
+	/** Type of the token */
+	TokenType type;
+
+	/** Identifier */
+	std::optional<std::string> identifier;
+
+	/** Value (for strings) */
+	std::optional<std::string> string;
+
+	/** Value (for characters) */
+	std::optional<char> character;
+
+	/** Value (for numbers) */
+	std::optional<int> ivalue;
+
+	/** Value (for decimals) */
+	std::optional<double> dvalue;
 };
 
 /**

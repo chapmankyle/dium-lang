@@ -15,10 +15,10 @@ static const char *tokenNames[] = {
 	"'and'", "'break'", "'continue'", "'else'", "'elsif'", "'exit'", "'false'", "'for'", "'func'",
 	"'if'", "'in'", "'or'", "'print'", "'println'", "'range'", "'return'", "'true'", "'void'", "'while'",
 	"'='", "'>='", "'>'", "'<='", "'<'", "'!='", "'!'", "'-'", "'+'", "'/'", "'*'", "'%'",
-	"'.'", "'['", "']'", "','", "'('", "')'", "'=>'"
+	"'.'", "'['", "']'", "','", "'('", "')'", "'{'", "'}'", "'=>'", "'none'"
 };
 
 const char *getTokenString(TokenType type) {
-	assert(type >= -1 && type < (sizeof(tokenNames) / sizeof(char *)));
+	assert(type >= 0 && type < (sizeof(tokenNames) / sizeof(char *)));
 	return tokenNames[type];
 }
