@@ -125,7 +125,7 @@ static void customPrint(const char *pre, const SourcePosition *pos, const char *
 	}
 
 	message += customFormat(fmt, args...);
-	std::cerr << message << std::endl;
+	std::cerr << "\n" << message << std::endl;
 }
 
 /**
