@@ -70,11 +70,11 @@ void parseSource() {
 		}
 
 		if (token.string) {
-			toPrint += token.string.value() + " ";
+			toPrint += customFormat("\"%s\" ", token.string.value().c_str());
 		}
 
 		if (token.character) {
-			toPrint += customFormat("%c ", token.character.value());
+			toPrint += customFormat("'%c' ", token.character.value());
 		}
 
 		if (token.ivalue) {

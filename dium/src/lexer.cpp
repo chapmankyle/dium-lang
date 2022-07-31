@@ -45,13 +45,13 @@ static ReservedWord reservedWords[] = {
 };
 
 #define NUM_RESERVED_WORDS (sizeof(reservedWords) / sizeof(ReservedWord))
-#define MAX_STR_LEN 1024
 
 // --------------- function prototypes -------------------------
 
 static void resetToken(Token *token);
 static void processWord(Token *token);
 static void processNumber(Token *token);
+static void processString(Token *token);
 static void skipComment(bool single);
 
 /* Source file */
@@ -164,9 +164,9 @@ void getToken(Token *token) {
 	} else {
 		switch (currChar) {
 		case '"':
-			// TODO: Process string
-			token->type = TOK_STR;
+			// Process string
 			nextChar();
+			processString(token);
 			break;
 		case '\'':
 			// TODO: Process character
@@ -366,6 +366,56 @@ void processNumber(Token *token) {
 	// Update token information
 	token->type = TOK_NUM;
 	token->ivalue = number;
+}
+
+/**
+ * Processes a string and updates the given token.
+ * @param token Token to update after processing.
+ */
+void processString(Token *token) {
+	SourcePosition start{ position.line, position.column - 1 };
+	std::string str = "";
+	char temp;
+
+	// Build the string
+	while (currChar != '"') {
+		if (srcFile.eof()) {
+			position = start;
+			printErr("String not closed");
+		}
+
+		if (!isascii(currChar) || currChar < 32) {
+			position = start;
+			printErr("Non-printable character (ASCII #%d) found in string", currChar);
+		}
+
+		str += currChar;
+
+		// Check escape codes
+		if (currChar == '\\') {
+			temp = currChar;
+			nextChar();
+
+			switch (currChar) {
+			case 'n':
+			case 't':
+			case '"':
+			case '\\':
+				str += currChar;
+				break;
+			default:
+				position = { position.line, position.column - 1 };
+				printErr("Unknown escape code '%c%c' found in string", temp, currChar);
+				break;
+			}
+		}
+
+		nextChar();
+	}
+
+	token->type = TOK_STR;
+	token->string = str;
+	nextChar();
 }
 
 /**
