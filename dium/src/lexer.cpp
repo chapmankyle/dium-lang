@@ -52,6 +52,7 @@ static void resetToken(Token *token);
 static void processWord(Token *token);
 static void processNumber(Token *token);
 static void processString(Token *token);
+static void processCharacter(Token *token);
 static void skipComment(bool single);
 
 /* Source file */
@@ -169,9 +170,9 @@ void getToken(Token *token) {
 			processString(token);
 			break;
 		case '\'':
-			// TODO: Process character
-			token->type = TOK_CHAR;
+			// Process character
 			nextChar();
+			processCharacter(token);
 			break;
 		case '=':
 			nextChar();
@@ -415,6 +416,69 @@ void processString(Token *token) {
 
 	token->type = TOK_STR;
 	token->string = str;
+	nextChar();
+}
+
+/**
+ * Processes a single character and updates the given token.
+ * @param token Token to update after processing.
+ */
+void processCharacter(Token *token) {
+	SourcePosition start{ position.line, position.column - 1 };
+	char ch;
+	char temp;
+	char escape = '-';
+	bool finished = false;
+
+	while (currChar != '\'') {
+		if (srcFile.eof()) {
+			position = start;
+			printErr("Character not closed");
+		}
+
+		if (finished) {
+			position = start;
+			printErr("Too many characters found");
+		}
+
+		if (!isascii(currChar) || currChar < 32) {
+			position = start;
+			printErr("Non-printable character (ASCII #%d) found in character", currChar);
+		}
+
+		ch = currChar;
+
+		// Check escape codes
+		if (currChar == '\\') {
+			temp = currChar;
+			nextChar();
+
+			switch (currChar) {
+			case 'n':
+				escape = '\n';
+				break;
+			case 't':
+				escape = '\t';
+				break;
+			case '"':
+				escape = '\"';
+				break;
+			case '\\':
+				escape = '\\';
+				break;
+			default:
+				position = { position.line, position.column - 1 };
+				printErr("Unknown escape code '%c%c' found in character", temp, currChar);
+				break;
+			}
+		}
+
+		finished = true;
+		nextChar();
+	}
+
+	token->type = TOK_CHAR;
+	token->character = (escape != '-') ? escape : ch;
 	nextChar();
 }
 
