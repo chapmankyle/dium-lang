@@ -14,7 +14,7 @@ static const char *tokenNames[] = {
 	"end-of-file", "identifier", "boolean", "character", "string", "number", "decimal", "array",
 	"'and'", "'break'", "'continue'", "'else'", "'elsif'", "'exit'", "'false'", "'for'", "'func'",
 	"'if'", "'in'", "'or'", "'print'", "'println'", "'range'", "'return'", "'true'", "'void'", "'while'",
-	"'='", "'>='", "'>'", "'<='", "'<'", "'!='", "'!'", "'-'", "'+'", "'/'", "'*'", "'%'",
+	"'='", "'=='", "'>='", "'>'", "'<='", "'<'", "'!='", "'!'", "'-'", "'+'", "'/'", "'*'", "'%'",
 	"'.'", "'['", "']'", "','", "'('", "')'", "'{'", "'}'", "'=>'", "'none'"
 };
 

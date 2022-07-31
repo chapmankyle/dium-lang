@@ -178,8 +178,11 @@ void getToken(Token *token) {
 			if (currChar == '>') {
 				token->type = TOK_ARROW;
 				nextChar();
-			} else {
+			} else if (currChar == '=') {
 				token->type = TOK_EQ;
+				nextChar();
+			} else {
+				token->type = TOK_ASSIGN;
 			}
 			break;
 		case '>':

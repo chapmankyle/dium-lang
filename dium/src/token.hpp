@@ -52,7 +52,8 @@ enum TokenType : int32_t {
 	TOK_WHILE,
 
 	/* Relational operators */
-	TOK_EQ,        /* equal */
+	TOK_ASSIGN,    /* assigns a value to a variable, '=' */
+	TOK_EQ,        /* is equal to, '==' */
 	TOK_GE,        /* greater than equal to */
 	TOK_GT,        /* greater than */
 	TOK_LE,        /* less than equal to */
