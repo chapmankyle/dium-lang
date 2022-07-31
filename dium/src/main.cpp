@@ -66,7 +66,7 @@ void parseSource() {
 		toPrint = "";
 
 		if (token.identifier) {
-			toPrint += token.identifier.value() + " ";
+			toPrint += (token.type == TOK_ID) ? token.identifier.value() + " " : customFormat("[%s] ", token.identifier.value().c_str());
 		}
 
 		if (token.string) {
