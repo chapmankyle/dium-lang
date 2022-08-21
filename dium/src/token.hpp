@@ -69,6 +69,7 @@ enum TokenType : int32_t {
 	TOK_MOD,
 
 	/* Non-alphabetic characters */
+	TOK_AT,        /* @, used for array indexing (e.g. arr@1, which is the value at position 1 inside array `arr`) */
 	TOK_DOT,       /* . */
 	TOK_LBRACK,    /* left bracket '[' */
 	TOK_RBRACK,    /* right bracket ']' */

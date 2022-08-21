@@ -244,6 +244,10 @@ void getToken(Token *token) {
 			token->type = TOK_MOD;
 			nextChar();
 			break;
+		case '@':
+			token->type = TOK_AT;
+			nextChar();
+			break;
 		case '.':
 			token->type = TOK_DOT;
 			nextChar();
